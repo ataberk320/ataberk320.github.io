@@ -49,7 +49,8 @@
       function openWindow(name, content, iconSrc) {
         const desktop = document.getElementById('desktop');
         const taskbar = document.getElementById('taskbar');
-        const iconHTML = iconSrc.startsWith('http') 
+        const isImage = iconSrc.endsWith('.png') || iconSrc.endsWith('.jpg') || iconSrc.endsWith('.ico');
+        const iconHTML = isImage 
         ? `<img src="${iconSrc}" width="16" height="16" style="vertical-align:middle; margin-right:5px;">` 
         : `<span style="margin-right:5px;">${iconSrc}</span>`;
         const win = document.createElement('div');
