@@ -97,17 +97,15 @@
       }
     function goToStore() {
       const overlay = document.getElementById('load');
-    
-    // 1. Önce elementi göster
+
       overlay.style.display = 'block';
     
-    // 2. Bir sonraki frame'i bekle (Tarayıcının display'i algılaması için şart)
       requestAnimationFrame(() => {
           overlay.style.opacity = '1';
           overlay.classList.add('active');
       });
 
-    // 3. Geçiş süresi 300ms olduğu için 300ms sonra yönlendir
+
       setTimeout(() => {
         window.location.href = "store.html";
       }, 300);
@@ -116,14 +114,16 @@
         openWindow('Welcome!', 'Welcome to ataberk320s website!', 'siteicon.png');
         const overlay = document.getElementById('load');
         if (overlay) {
+          overlay.style.transition = 'none';
           overlay.classList.remove('active');
           overlay.style.opacity = '0';
+          overlay.style.display = 'none';
         
+
           setTimeout(() => {
-            overlay.style.display = 'none';
-          }, 300);
-        }
-  };
+            overlay.style.transition = 'transform 0.3s ease-in, opacity 0.3s ease-in';
+          }, 50);
+      }
   </script>
 
   
