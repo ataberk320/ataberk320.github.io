@@ -17,7 +17,7 @@
     #start-btn:hover { background: rgba(255, 255, 255, 0.4); }
     #load { position: fixed; top: 50%; left: 50%; width: 100vw;  height: 100vh; background: #000000; border-radius: 0px; z-index: 9999; transform: translate(-50%, -50%) scale(0); transition: transform 0.3s ease-in; pointer-events: none; opacity: 0; }
     #load.active { transform: translate(-50%, -50%) scale(2); }
-    .wood-frame { padding: 15px; border: 12px solid #5d4037; border-radius: 8px; background: #4a3628; box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 5px 5px 15px rgba(0,0,0,0.4); display: inline-block; z-index: 5;}
+    .wood-frame { padding: 15px; border: 12px solid #5d4037; border-radius: 8px; background: #4a3628; box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 5px 5px 15px rgba(0,0,0,0.4); display: inline-block;}
     .green-board { background: #2e7d32; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 20px 20px; width: 300px; padding: 20px; color: #e8f5e9; font-family: 'Droid Sans', sans-serif, monospace; border-radius: 2px; }
     .news-item { border-bottom: 1px dashed rgba(255,255,255,0.3); margin-bottom: 15px; padding-bottom: 5px; }
   </style>
@@ -32,12 +32,13 @@
   
   <div id="desktop"></div>
   
-  <div class="wood-frame">
+   <div class="wood-frame">
     <div class="green-board">
         <h3>AutumnOS News</h3>
         <div class="news-item">No current news.</div>
     </div>
-</div>
+  </div>
+  
   <div id="taskbar">
     <div id="start-btn">Start</div>
   </div>
