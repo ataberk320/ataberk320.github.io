@@ -16,12 +16,13 @@
 </head>
 <body>
   <div id="navbar">
-    <div class="nav-item" onclick="openWindow('About')">About</div>
-    <div class="nav-item" onclick="openWindow('Releases')">Releases</div>
-    <div class="nav-item" onclick="openWindow('Autumn Store')">Autumn Store</div>
+    <div class="nav-item" onclick="openWindow('About', 'AutumnOS is a RISC-V based operating system built from the ground up, featuring a custom display server, a proprietary socket structure, and a lightweight multitasking architecture. The system leverages an ampersand-based (&) job control mechanism to handle concurrent tasks efficiently.', 'siteicon.png')>About</div>
+    <div class="nav-item" onclick="openWindow('Releases', 'Coming soon.', 'siteicon.png')">Releases</div>
+    <div class="nav-item" onclick="openWindow('Autumn Store', 'Coming soon.', 'siteicon.png')">Autumn Store</div>
   </div>
-
-   <div id="desktop"></div>
+  window.onload = function() {
+        openWindow('Welcome!', 'Welcome to ataberk320's website!, 'siteicon.png');
+    };
   
    <div id="taskbar">Only UI testing.</div>
 
@@ -47,20 +48,24 @@
 
         document.onmouseup = () => isDragging = false;
       }
-      function openWindow(name) {
+      function openWindow(name, content, iconSrc) {
         const desktop = document.getElementById('desktop');
+        const taskbar = document.getElementById('taskbar');
+        const iconHTML = iconSrc.startsWith('http') 
+        ? `<img src="${iconSrc}" width="16" height="16" style="vertical-align:middle; margin-right:5px;">` 
+        : `<span style="margin-right:5px;">${iconSrc}</span>`;
         const win = document.createElement('div');
         win.className = 'window';
         win.style.top = '20px';
         win.style.left = '20px';
         
         win.innerHTML = `
-            <div class="win-header">
-                <strong>${name}</strong>
-                <button onclick="this.parentElement.parentElement.remove()">X</button>
-            </div>
-            <div style="padding: 10px;">content.</div>
-        `;
+        <div class="win-header">
+            <span>${iconHTML} <strong>${name}</strong></span>
+            <button class="close-btn">X</button>
+        </div>
+        <div style="padding: 10px; color: black;">${content}</div>
+    `;
             
         desktop.appendChild(win);
         makeDraggable(win);
@@ -70,10 +75,15 @@
         btn.style.background = "#555";
         btn.style.cursor = "pointer";
         btn.innerText = name;
+        btn.innerHTML =  `${iconHTML} ${name}`
         btn.onclick = () => {
           win.style.display = (win.style.display === 'none') ? 'flex' : 'none';
         };
         taskbar.appendChild(btn);
+        win.querySelector('.close-btn').onclick = () => {
+        win.remove();
+        btn.remove();
+    };
       }
   </script>
 
