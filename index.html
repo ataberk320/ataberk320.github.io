@@ -46,7 +46,7 @@
         }
 
         document.onmouseup = () => isDragging = false;
-    
+      }
       function openWindow(name) {
         const desktop = document.getElementById('desktop');
         const win = document.createElement('div');
@@ -70,7 +70,7 @@
         btn.style.background = "#555";
         btn.style.cursor = "pointer";
         btn.innerText = name;
-        btn.onClick = () => {
+        btn.onclick = () => {
           win.style.display = (win.style.display === 'none') ? 'flex' : 'none';
         };
         taskbar.appendChild(btn);
