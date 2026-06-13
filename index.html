@@ -66,17 +66,17 @@
           const status = window.OS_VERSION;
 
                 if (status === true) {
-                    display.innerText = data.success;
+                    console.info (data.success);
                 } 
                 else if (status === "soon") {
-                    display.innerText = data.warning;
+                    console.info (data.warning);
                 } 
                 else {
-                    display.innerText = data.message;
+                    console.info (data.message);
                 }
         }
         catch (error) {
-          console.error(error);
+          console.error (error);
         }
       }
       function makeDraggable(win) {
@@ -156,6 +156,7 @@
     }
     
     function goToRepo() {
+      if (!overlay) return;
       overlay.style.display = 'block';
       overlay.offsetHeight; 
       overlay.classList.add('active');
