@@ -7,14 +7,16 @@
   <style>
     body, html { margin: 0; padding: 0; height: 100%; font-family: 'Droid Sans', sans-serif; background: #2c3e50; overflow: hidden; color: white}
     #navbar { height: 50px; background: linear-gradient(to bottom, #333333, #000000); display: flex; align-items: center; gap: 8px; }
-    .nav-item { cursor: pointer; display: flex; align-items: center; gap: 8px; }
+    #start-menu { position: fixed; bottom: 40px; left: 0; width: 180px; background: #c0c0c0; border: 2px solid; border-color: #ffffff #000000 #000000 #ffffff; padding: 4px; z-index: 10000; display: none; font-family: sans-serif; }
+    .menu-item { padding: 6px 10px; cursor: pointer; color: black; border: 1px solid transparent; }
+    .menu-item:hover { background: #000080; color: white; }
     #desktop { height: calc(100vh - 90px); background: url("wallpaper.jpg"); background-size: cover; background-position: center; background-repeat: no-repeat; position: relative; padding: 10px }
     #taskbar { position: fixed; bottom: 0; width: 100%; height: 40px; background: #7f8c8d; color: white; display: flex; align-items: center; padding: 0 10px; box-sizing: border-box; font-size: 14px; }
     .window { position: absolute; width: 300px; height: 200px; background: white; border: 1px solid #ccc; box-shadow: 2px 2px 10px rgba(0,0,0,0.3); border-radius: 1px; display: flex; flex-direction: column; color: black; z-index: 10; transition:  transform 0.2s ease-out, opacity 0.2s; transform: scale(0.9); opacity: 0; }
     .window.open { transform: scale(1); opacity: 1; }
     .win-header { background: #eee; padding: 5px 10px; display: flex; justify-content: space-between; cursor: move; }
-    #start-btn {padding: 0 15px; height: 30px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.2); border-radius: 1px; cursor: pointer; font-weight: bold; margin-right: 10px; transition: background 0.2s; }
-    #start-btn:hover { background: rgba(255, 255, 255, 0.4); }
+    #start-btn { height: 30px; padding: 0 10px; background: #c0c0c0; border: 2px solid; border-color: #ffffff #000000 #000000 #ffffff; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; margin-right: 10px; color: black; box-sizing: border-box; }
+    #start-btn:active { border-color: #000000 #ffffff #ffffff #000000; padding-top: 2px; }
     #load { position: fixed; top: 50%; left: 50%; width: 100vw;  height: 100vh; background: #000000; border-radius: 0px; z-index: 9999; transform: translate(-50%, -50%) scale(0); transition: transform 0.3s ease-in; pointer-events: none; opacity: 0; }
     #load.active { transform: translate(-50%, -50%) scale(2); }
     .wood-frame { padding: 20px; border: 12px solid #5d4037; border-radius: 8px; background: #4a3628; box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 5px 5px 15px rgba(0,0,0,0.4); display: inline-block;}
@@ -24,11 +26,7 @@
 </head>
 <body>
   <div id="load"></div>
-  <div id="navbar">
-    <div class="nav-item" onclick="openWindow('About', 'AutumnOS is a RISC-V based operating system built from the ground up, featuring a custom display server, a proprietary socket structure, and a lightweight multitasking architecture. The system leverages an ampersand-based (&) job control mechanism to handle concurrent tasks efficiently.', 'siteicon.png')">About</div>
-    <div class="nav-item" onclick="openWindow('Releases', 'Coming soon.', 'siteicon.png')">Releases</div>
-    <div class="nav-item" onclick="goToStore()">Autumn Store</div>
-  </div>
+  
   
   <div id="desktop">
     <div class="wood-frame">
@@ -42,7 +40,15 @@
 
   
   <div id="taskbar">
-    <div id="start-btn">Start</div>
+   <div id="start-btn">Start</div>
+     <div id="start-menu">
+      <div class="menu-item" onclick="goToStore()">
+        <img src="store.png" width="16" height="16"> Autumn Store
+     </div>
+       <div class="menu-item"onclick="openWindow('Releases', 'Coming soon.', 'siteicon.png') ">
+        <img src="siteicon.png" width="16" height="16"> Releases
+     </div>
+    </div>
   </div>
 
   <script>
@@ -123,6 +129,12 @@
         window.location.href = "store.html";
       }, 300);
     }
+
+  document.getElementById('start-btn').onclick = function() {
+    const menu = document.getElementById('start-menu');
+    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+  };
+    
   window.onload = function() {
         openWindow('Welcome!', 'Welcome to ataberk320s website!', 'siteicon.png');
         const overlay = document.getElementById('load');
