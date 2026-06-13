@@ -16,15 +16,13 @@
 </head>
 <body>
   <div id="navbar">
-    <div class="nav-item" onclick="openWindow('About', 'AutumnOS is a RISC-V based operating system built from the ground up, featuring a custom display server, a proprietary socket structure, and a lightweight multitasking architecture. The system leverages an ampersand-based (&) job control mechanism to handle concurrent tasks efficiently.', 'siteicon.png')>About</div>
+    <div class="nav-item" onclick="openWindow('About', 'AutumnOS is a RISC-V based operating system built from the ground up, featuring a custom display server, a proprietary socket structure, and a lightweight multitasking architecture. The system leverages an ampersand-based (&) job control mechanism to handle concurrent tasks efficiently.', 'siteicon.png')">About</div>
     <div class="nav-item" onclick="openWindow('Releases', 'Coming soon.', 'siteicon.png')">Releases</div>
     <div class="nav-item" onclick="openWindow('Autumn Store', 'Coming soon.', 'siteicon.png')">Autumn Store</div>
   </div>
-  window.onload = function() {
-        openWindow('Welcome!', 'Welcome to ataberk320's website!, 'siteicon.png');
-    };
+  <div id="desktop"></div> <div id="taskbar"></div>
   
-   <div id="taskbar">Only UI testing.</div>
+  <div id="taskbar">Only UI testing.</div>
 
   <script>
       function makeDraggable(win) {
@@ -81,10 +79,13 @@
         };
         taskbar.appendChild(btn);
         win.querySelector('.close-btn').onclick = () => {
-        win.remove();
-        btn.remove();
-    };
-      }
+          win.remove();
+          btn.remove();
+       };
+  }
+  window.onload = function() {
+        openWindow('Welcome!', 'Welcome to ataberk320s website!', 'siteicon.png');
+  };
   </script>
 
   
