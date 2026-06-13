@@ -51,6 +51,10 @@
        <div class="menu-item"onclick="openWindow('Releases', 'Coming soon.', 'siteicon.png') ">
         <img src="siteicon.png" width="16" height="16"> Releases
      </div>
+        <div class="menu-item"onclick="goToRepo() ">
+        <img src="siteicon.png" width="16" height="16"> AutumnOS Source Code
+     </div>
+     </div>
     </div>
   </div>
 
@@ -138,19 +142,30 @@
        };
       }
     function goToStore() {
-      const overlay = document.getElementById('load');
-
-      overlay.style.display = 'block';
+        const overlay = document.getElementById('load');
+        overlay.style.display = 'block';
     
-      requestAnimationFrame(() => {
-          overlay.style.opacity = '1';
-          overlay.classList.add('active');
-      });
+        overlay.offsetHeight; 
+    
+        overlay.style.opacity = '1';
+        overlay.classList.add('active');
 
+        overlay.addEventListener('transitionend', () => {
+          window.location.href = "store.html";
+        }, { once: true });
+    }
+    
+    function goToRepo() {
+      overlay.style.display = 'block';
+      overlay.offsetHeight; 
+      overlay.classList.add('active');
 
-      setTimeout(() => {
-        window.location.href = "store.html";
-      }, 300);
+      overlay.addEventListener('transitionend', () => {
+      window.open("https://github.com/ataberk320/autumnos-mobile", "_blank");
+        
+      overlay.classList.remove('active');
+        overlay.style.display = 'none';
+      }, { once: true });
     }
 
   document.getElementById('start-btn').onclick = function() {
@@ -160,7 +175,7 @@
     
   window.onload = function() {
         SupportStat();
-        openWindow('Welcome!', 'Welcome to ataberk320s website!', 'siteicon.png');
+        openWindow('Welcome!', 'Welcome to ataberk320s website!\n AutumnOS: https://www.github.com/ataberk320/autumnos-mobile\n YouTube: https://www.youtube.com/@AutixElectronics', 'siteicon.png');
         const overlay = document.getElementById('load');
         if (overlay) {
           overlay.style.transition = 'none';
