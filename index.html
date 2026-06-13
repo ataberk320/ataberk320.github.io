@@ -15,8 +15,8 @@
     .win-header { background: #eee; padding: 5px 10px; display: flex; justify-content: space-between; cursor: move; }
     #start-btn {padding: 0 15px; height: 30px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.2); border-radius: 1px; cursor: pointer; font-weight: bold; margin-right: 10px; transition: background 0.2s; }
     #start-btn:hover { background: rgba(255, 255, 255, 0.4); }
-    #load { position: fixed; top: 50%; left: 50%; width: 0;  height: 0; background: #000000; border-radius: 0px; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.6s ease-in-out, height 0.6s ease-in-out; pointer-events: none; }
-    #load.active { width: 300vw; height 300vw; }
+    #load { position: fixed; top: 50%; left: 50%; width: 100vw;  height: 100vh; background: #000000; border-radius: 0px; z-index: 9999; transform: translate(-50%, -50%) scale(0); transition: transform 2s ease-in-out; pointer-events: none; }
+    #load.active { transform: translate(-50%, -50%) scale(2); }
   </style>
 </head>
 <body>
