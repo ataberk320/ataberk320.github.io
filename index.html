@@ -15,7 +15,7 @@
     .win-header { background: #eee; padding: 5px 10px; display: flex; justify-content: space-between; cursor: move; }
     #start-btn {padding: 0 15px; height: 30px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.2); border-radius: 1px; cursor: pointer; font-weight: bold; margin-right: 10px; transition: background 0.2s; }
     #start-btn:hover { background: rgba(255, 255, 255, 0.4); }
-    #load { position: fixed; top: 50%; left: 50%; width: 100vw;  height: 100vh; background: #000000; border-radius: 0px; z-index: 9999; transform: translate(-50%, -50%) scale(0); transition: transform 0.3s ease-in; pointer-events: none; }
+    #load { position: fixed; top: 50%; left: 50%; width: 100vw;  height: 100vh; background: #000000; border-radius: 0px; z-index: 9999; transform: translate(-50%, -50%) scale(0); transition: transform 0.3s ease-in; pointer-events: none; opacity: 0; }
     #load.active { transform: translate(-50%, -50%) scale(2); }
   </style>
 </head>
@@ -96,18 +96,22 @@
        };
       }
     function goToStore() {
-          const overlay = document.getElementById('load');
-
-          overlay.style.display = 'block';
-          overlay.style.opacity = '1';
+      const overlay = document.getElementById('load');
     
-
+    // 1. Önce elementi göster
+      overlay.style.display = 'block';
+    
+    // 2. Bir sonraki frame'i bekle (Tarayıcının display'i algılaması için şart)
+      requestAnimationFrame(() => {
+          overlay.style.opacity = '1';
           overlay.classList.add('active');
+      });
 
-        setTimeout(() => {
-          window.location.href = "store.html";
-        }, 300);
-  }
+    // 3. Geçiş süresi 300ms olduğu için 300ms sonra yönlendir
+      setTimeout(() => {
+        window.location.href = "store.html";
+      }, 300);
+    }
   window.onload = function() {
         openWindow('Welcome!', 'Welcome to ataberk320s website!', 'siteicon.png');
         const overlay = document.getElementById('load');
