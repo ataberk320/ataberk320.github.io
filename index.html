@@ -13,15 +13,17 @@
     .window { position: absolute; width: 300px; height: 200px; background: white; border: 1px solid #ccc; box-shadow: 2px 2px 10px rgba(0,0,0,0.3); border-radius: 1px; display: flex; flex-direction: column; color: black; z-index: 10; transition:  transform 0.2s ease-out, opacity 0.2s; transform: scale(0.9); opacity: 0; }
     .window.open { transform: scale(1); opacity: 1; }
     .win-header { background: #eee; padding: 5px 10px; display: flex; justify-content: space-between; cursor: move; }
-    #start-btn {padding: 0 15px; height: 30px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.2); border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 10px; transition: background 0.2s; }
+    #start-btn {padding: 0 15px; height: 30px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.2); border-radius: 1px; cursor: pointer; font-weight: bold; margin-right: 10px; transition: background 0.2s; }
     #start-btn:hover { background: rgba(255, 255, 255, 0.4); }
+    #load { position: fixed; top: 50%; left: 50%; width: 0;  height: 0; background: #000000; border-radius: 0px; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.6s ease-in-out, height 0.6s ease-in-out; pointer-events: none; }
+    #load.active { width: 300wv; height 300wv; }
   </style>
 </head>
 <body>
   <div id="navbar">
     <div class="nav-item" onclick="openWindow('About', 'AutumnOS is a RISC-V based operating system built from the ground up, featuring a custom display server, a proprietary socket structure, and a lightweight multitasking architecture. The system leverages an ampersand-based (&) job control mechanism to handle concurrent tasks efficiently.', 'siteicon.png')">About</div>
     <div class="nav-item" onclick="openWindow('Releases', 'Coming soon.', 'siteicon.png')">Releases</div>
-    <div class="nav-item" onclick="openWindow('Autumn Store', 'Coming soon.', 'siteicon.png')">Autumn Store</div>
+    <div class="nav-item" onclick="goToStore()">Autumn Store</div>
   </div>
   <div id="desktop"></div>
   
@@ -91,6 +93,14 @@
           win.remove();
           btn.remove();
        };
+        function goToStore() {
+          const overlay = document.getElementById('load');
+          overlay.classList.add('active');
+    
+
+        setTimeout(() => {
+          window.location.href = "store.html";
+        }, 600);
   }
   window.onload = function() {
         openWindow('Welcome!', 'Welcome to ataberk320s website!', 'siteicon.png');
