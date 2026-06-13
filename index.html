@@ -52,6 +52,26 @@
   </div>
 
   <script>
+      async function SupportStat() {
+        try {
+          const response = await fetch('ver.json');
+          const data = await response.json();
+          const status = data.active_ver[1.0];
+
+                if (status === true) {
+                    display.innerText = data.success;
+                } 
+                else if (status === "soon") {
+                    display.innerText = data.warning;
+                } 
+                else {
+                    display.innerText = data.message;
+                }
+        }
+        catch (error) {
+          console.error(error);
+        }
+      }
       function makeDraggable(win) {
         const header = win.querySelector('.win-header');
         let isDragging = false;
@@ -136,6 +156,7 @@
   };
     
   window.onload = function() {
+        SupportStat();
         openWindow('Welcome!', 'Welcome to ataberk320s website!', 'siteicon.png');
         const overlay = document.getElementById('load');
         if (overlay) {
