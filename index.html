@@ -13,6 +13,8 @@
     .window { position: absolute; width: 300px; height: 200px; background: white; border: 1px solid #ccc; box-shadow: 2px 2px 10px rgba(0,0,0,0.3); border-radius: 1px; display: flex; flex-direction: column; color: black; z-index: 10; transition:  transform 0.2s ease-out, opacity 0.2s; transform: scale(0.9); opacity: 0; }
     .window.open { transform: scale(1); opacity: 1; }
     .win-header { background: #eee; padding: 5px 10px; display: flex; justify-content: space-between; cursor: move; }
+    #start-btn {padding: 0 15px; height: 30px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.2); border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 10px; transition: background 0.2s; }
+    #start-btn:hover { background: rgba(255, 255, 255, 0.4); }
   </style>
 </head>
 <body>
@@ -23,7 +25,9 @@
   </div>
   <div id="desktop"></div>
   
-  <div id="taskbar">Start</div>
+  <div id="taskbar">
+    <div id="start-btn">Start</div>
+  </div>
 
   <script>
       function makeDraggable(win) {
