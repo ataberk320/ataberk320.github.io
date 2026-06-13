@@ -1,0 +1,7 @@
+{
+  "active_ver": {
+    "1.0": true
+  },
+  "message": "Support has ended for this version of AutumnOS.",
+  "warning": "Support for this version of AutumnOS will end soon.",
+  "success": "This version of AutumnOS is currently supported."
