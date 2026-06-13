@@ -58,6 +58,7 @@
   </div>
 
   <script>
+      const overlay = document.getElementById('load');
       async function SupportStat() {
         try {
           const response = await fetch('ver.json');
@@ -141,7 +142,7 @@
        };
       }
     function goToStore() {
-        const overlay = document.getElementById('load');
+
         overlay.style.display = 'block';
     
         overlay.offsetHeight; 
@@ -175,7 +176,6 @@
   window.onload = function() {
         SupportStat();
         openWindow('Welcome!', 'Welcome to ataberk320s website!<br> AutumnOS: https://www.github.com/ataberk320/autumnos-mobile<br>YouTube: https://www.youtube.com/@AutixElectronics', 'siteicon.png');
-        const overlay = document.getElementById('load');
         if (overlay) {
           overlay.style.transition = 'none';
           overlay.classList.remove('active');
