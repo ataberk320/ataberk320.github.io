@@ -26,6 +26,27 @@
    <div id="taskbar">Only UI testing.</div>
 
   <script>
+      function makeDraggable(win) {
+        const header = win.querySelector('.win-header');
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        header.onmousedown = (e) => {
+          isDragging = true;
+          offsetX = e.clientX - win.offsetLeft;
+          offsetY = e.clientY - win.offsetTop;
+          win.style.zIndex = 1000;
+        };
+
+        document.onmousemove = (e) => {
+          if (isDragging) {
+                win.style.left = (e.clientX - offsetX) + 'px';
+                win.style.top = (e.clientY - offsetY) + 'px';
+          }
+        }
+
+        document.onmouseup = () => isDragging = false;
+    
       function openWindow(name) {
         const desktop = document.getElementById('desktop');
         const win = document.createElement('div');
@@ -42,6 +63,17 @@
         `;
             
         desktop.appendChild(win);
+        makeDraggable(win);
+        const btn = document.createElement('div');
+        btn.className = 'taskbar-item';
+        btn.style.padding = "5px 10px";
+        btn.style.background = "#555";
+        btn.style.cursor = "pointer";
+        btn.innerText = name;
+        btn.onClick = () => {
+          win.style.display = (win.style.display === 'none') ? 'flex' : 'none';
+        };
+        taskbar.appendChild(btn);
       }
   </script>
 
