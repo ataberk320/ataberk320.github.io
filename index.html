@@ -124,11 +124,18 @@
         setTimeout(() => {
           win.classList.add('open');
         }, 10);
-        createStaticTaskbarItem(name, icon);
-        btn.onclick = () => {
+        const winBtn = document.createElement('div');
+        winBtn.className = 'taskbar-item';
+        winBtn.style.padding = "5px 10px";
+        winBtn.style.background = "#555";
+        winBtn.style.cursor = "pointer";
+        winBtn.style.marginRight = "5px";
+        winBtn.innerHTML = `<img src="${iconSrc}" width="16" height="16" style="vertical-align:middle;"> ${name}`;
+
+        winBtn.onclick = () => {
           win.style.display = (win.style.display === 'none') ? 'flex' : 'none';
         };
-        taskbar.appendChild(btn);
+        taskbar.appendChild(winBtn);
         win.querySelector('.close-btn').onclick = () => {
           win.remove();
           btn.remove();
@@ -161,7 +168,7 @@
         overlay.style.display = 'none';
       }, { once: true });
     }
-    function createStaticTaskbarItem(name, iconSrc) {
+    function createStaticTaskbarItem(name, iconSrc, action) {
       const taskbar = document.getElementById('taskbar');
       const btn = document.createElement('div');
       btn.className = 'taskbar-item';
@@ -170,6 +177,7 @@
       btn.style.cursor = "pointer";
       btn.style.marginRight = "5px";
       btn.innerHTML = `<img src="${iconSrc}" width="16" height="16" style="vertical-align:middle;"> ${name}`;
+      btn.onclick = action;
       taskbar.appendChild(btn);
     }
 
@@ -181,7 +189,9 @@
   window.onload = function() {
         SupportStat();
         openWindow('Welcome!', 'Welcome to ataberk320s website!<br> AutumnOS: https://www.github.com/ataberk320/autumnos-mobile<br>YouTube: https://www.youtube.com/@AutixElectronics', 'siteicon.png');
-        createStaticTaskbarItem("GitHub", "siteicon.png");
+        createStaticTaskbarItem("GitHub", "siteicon.png", () => {
+          window.open("https://github.com/ataberk320/autumnos-mobile", "_blank");
+        });
         if (overlay) {
           overlay.style.transition = 'none';
           overlay.classList.remove('active');
