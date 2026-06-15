@@ -152,7 +152,7 @@
 
         overlay.addEventListener('transitionend', () => {
           window.location.href = "store.html";
-        }, { once: true });
+        }, 2000);
     }
     
     function goToRepo() {
@@ -166,7 +166,7 @@
         
       overlay.classList.remove('active');
         overlay.style.display = 'none';
-      }, { once: true });
+      }, 2000);
     }
     function createStaticTaskbarItem(name, iconSrc, action) {
       const taskbar = document.getElementById('taskbar');
