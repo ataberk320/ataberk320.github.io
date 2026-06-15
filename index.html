@@ -59,6 +59,7 @@
 
   <script>
       const overlay = document.getElementById('load');
+      const btn = document.createElement('div');
       async function SupportStat() {
         try {
           const response = await fetch('ver.json');
@@ -125,7 +126,6 @@
         setTimeout(() => {
           win.classList.add('open');
         }, 10);
-        const btn = document.createElement('div');
         btn.className = 'taskbar-item';
         btn.style.padding = "5px 10px";
         btn.style.background = "#555";
@@ -177,6 +177,8 @@
   window.onload = function() {
         SupportStat();
         openWindow('Welcome!', 'Welcome to ataberk320s website!<br> AutumnOS: https://www.github.com/ataberk320/autumnos-mobile<br>YouTube: https://www.youtube.com/@AutixElectronics', 'siteicon.png');
+        taskbar.appendChild(btn);
+        btn.innerText("my GitHub");
         if (overlay) {
           overlay.style.transition = 'none';
           overlay.classList.remove('active');
