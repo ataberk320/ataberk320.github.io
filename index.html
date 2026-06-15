@@ -59,7 +59,6 @@
 
   <script>
       const overlay = document.getElementById('load');
-      const btn = document.createElement('div');
       async function SupportStat() {
         try {
           const response = await fetch('ver.json');
@@ -103,7 +102,6 @@
       }
       function openWindow(name, content, iconSrc) {
         const desktop = document.getElementById('desktop');
-        const taskbar = document.getElementById('taskbar');
         const isImage = iconSrc.endsWith('.png') || iconSrc.endsWith('.jpg') || iconSrc.endsWith('.ico');
         const iconHTML = isImage 
         ? `<img src="${iconSrc}" width="16" height="16" style="vertical-align:middle; margin-right:5px;">` 
@@ -126,12 +124,7 @@
         setTimeout(() => {
           win.classList.add('open');
         }, 10);
-        btn.className = 'taskbar-item';
-        btn.style.padding = "5px 10px";
-        btn.style.background = "#555";
-        btn.style.cursor = "pointer";
-        btn.innerText = name;
-        btn.innerHTML =  `${iconHTML} ${name}`
+        createStaticTaskbarItem(name, icon);
         btn.onclick = () => {
           win.style.display = (win.style.display === 'none') ? 'flex' : 'none';
         };
@@ -168,6 +161,17 @@
         overlay.style.display = 'none';
       }, { once: true });
     }
+    function createStaticTaskbarItem(name, iconSrc) {
+      const taskbar = document.getElementById('taskbar');
+      const btn = document.createElement('div');
+      btn.className = 'taskbar-item';
+      btn.style.padding = "5px 10px";
+      btn.style.background = "#555";
+      btn.style.cursor = "pointer";
+      btn.style.marginRight = "5px";
+      btn.innerHTML = `<img src="${iconSrc}" width="16" height="16" style="vertical-align:middle;"> ${name}`;
+      taskbar.appendChild(btn);
+    }
 
   document.getElementById('start-btn').onclick = function() {
     const menu = document.getElementById('start-menu');
@@ -177,8 +181,7 @@
   window.onload = function() {
         SupportStat();
         openWindow('Welcome!', 'Welcome to ataberk320s website!<br> AutumnOS: https://www.github.com/ataberk320/autumnos-mobile<br>YouTube: https://www.youtube.com/@AutixElectronics', 'siteicon.png');
-        taskbar.appendChild(btn);
-        btn.innerText("my GitHub");
+        createStaticTaskbarItem("GitHub", "siteicon.png");
         if (overlay) {
           overlay.style.transition = 'none';
           overlay.classList.remove('active');
