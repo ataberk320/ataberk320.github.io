@@ -121,6 +121,13 @@
 
         document.onmouseup = () => isDragging = false;
       }
+
+      function openImageViewer(src, title) {
+        if (!src || src.endsWith('NULL.jpg')) return;
+        const content = `<div style="text-align: center;"><img src="${src}" style="max-width: 100%; max-height: 70vh; border-radius: 4px; display: block; margin: 0 auto;"></div>`;
+        openWindow('Image: ' + title, content, 'siteicon.png');
+      }
+    
       function openWindow(name, content, iconSrc) {
         const desktop = document.getElementById('desktop');
         const isImage = iconSrc.endsWith('.png') || iconSrc.endsWith('.jpg') || iconSrc.endsWith('.ico');
@@ -189,7 +196,7 @@
         overlay.style.display = 'none';
       }, 2000);
     }
-
+    
     
     function createStaticTaskbarItem(name, iconSrc, action) {
       const taskbar = document.getElementById('taskbar');
@@ -204,6 +211,14 @@
       taskbar.appendChild(btn);
     }
 
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('start-menu');
+        const startBtn = document.getElementById('start-btn');
+        if (menu.style.display === 'block' && !menu.contains(e.target) && !startBtn.contains(e.target)) {
+          menu.style.display = 'none';
+        }
+      });
+    
   document.getElementById('start-btn').onclick = function() {
     const menu = document.getElementById('start-menu');
     menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
