@@ -217,7 +217,8 @@
         if (menu.style.display === 'block' && !menu.contains(e.target) && !startBtn.contains(e.target)) {
           menu.style.display = 'none';
         }
-      });
+    });
+
     
   document.getElementById('start-btn').onclick = function() {
     const menu = document.getElementById('start-menu');
@@ -245,6 +246,65 @@
           }, 50);
         }
   }
+
+    function saveFile(version, file) {
+      let req = indexedDB.open("AutixDB", 1);
+      req.onupgradeneeded = e => e.target.result.createObjectStore("files", { keyPath: "path" });
+      req.onsuccess = e => {
+        let db = e.target.result;
+        let tx = db.transaction("files", "readwrite");
+        tx.objectStore("files").put({ path: `${version}/${file.name}`, version: version, name: file.name, data: file });
+        tx.oncomplete = () => openReleases();
+      };
+    }
+
+    function openReleases() {
+      let req = indexedDB.open("AutixDB", 1);
+      req.onupgradeneeded = e => e.target.result.createObjectStore("files", { keyPath: "path" });
+      req.onsuccess = e => {
+        let db = e.target.result;
+        let tx = db.transaction("files", "readonly");
+        let query = tx.objectStore("files").getAll();
+        
+        query.onsuccess = () => {
+          let files = query.result;
+          let grouped = {};
+          files.forEach(f => {
+            if (!grouped[f.version]) grouped[f.version] = [];
+            grouped[f.version].push(f);
+          });
+
+          let html = '';
+          if (Object.keys(grouped).length === 0) {
+            html = '<p style="color: #666; font-style: italic; margin: 0;">Henüz hiç sürüm yüklenmedi.</p>';
+          } else {
+            for (let ver in grouped) {
+              html += `<div style="margin-bottom: 10px;"><strong style="color: #333;">📦 ${ver}</strong><ul style="padding-left: 15px; margin: 3px 0; list-style-type: none;">`;
+              grouped[ver].forEach(f => {
+                html += `<li style="margin: 4px 0;"><a href="${URL.createObjectURL(f.data)}" download="${f.name}" style="color: #0066cc; text-decoration: none;">📁 ${f.name}</a></li>`;
+              });
+              html += `</ul></div>`;
+            }
+          }
+
+          let adminBox = localStorage.getItem('autix_admin_session') === 'aktif' 
+            ? `<div style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 6px;">
+                 <input type="text" id="versionInput" placeholder="Sürüm (Örn: v0.2)" style="width: 90px; font-size: 11px; margin-bottom: 4px; padding: 2px;"><br>
+                 <input type="file" id="versionFile" onchange="if(this.files[0]) saveFile(document.getElementById('versionInput').value || 'v0.1', this.files[0])" style="font-size: 11px;">
+               </div>` 
+            : '';
+
+          let content = `
+            <div style="font-family: sans-serif; font-size: 13px; color: black; max-height: 250px; overflow-y: auto; min-width: 240px;">
+              ${html}
+              ${adminBox}
+            </div>
+          `;
+          
+          openWindow('Releases (AutumnOS AGI)', content, 'siteicon.png');
+        };
+      };
+    }
   </script>
 
   
