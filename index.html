@@ -247,64 +247,90 @@
         }
   }
 
-    function saveFile(version, file) {
-      let req = indexedDB.open("AutixDB", 1);
-      req.onupgradeneeded = e => e.target.result.createObjectStore("files", { keyPath: "path" });
-      req.onsuccess = e => {
-        let db = e.target.result;
-        let tx = db.transaction("files", "readwrite");
-        tx.objectStore("files").put({ path: `${version}/${file.name}`, version: version, name: file.name, data: file });
-        tx.oncomplete = () => openReleases();
-      };
-    }
+  function saveFile(version, file) {
+  let req = indexedDB.open("AutixDB", 1);
+  req.onupgradeneeded = e => e.target.result.createObjectStore("files", { keyPath: "path" });
+  req.onsuccess = e => {
+    let db = e.target.result;
+    let tx = db.transaction("files", "readwrite");
+    let binaryBlob = new Blob([file], { type: "application/octet-stream" });
+    tx.objectStore("files").put({ 
+      path: `${version}/${file.name}`, 
+      version: version, 
+      name: file.name, 
+      data: binaryBlob 
+    });
+    tx.oncomplete = () => openReleases();
+  };
+}
 
-    function openReleases() {
-      let req = indexedDB.open("AutixDB", 1);
-      req.onupgradeneeded = e => e.target.result.createObjectStore("files", { keyPath: "path" });
-      req.onsuccess = e => {
-        let db = e.target.result;
-        let tx = db.transaction("files", "readonly");
-        let query = tx.objectStore("files").getAll();
-        
-        query.onsuccess = () => {
-          let files = query.result;
-          let grouped = {};
-          files.forEach(f => {
-            if (!grouped[f.version]) grouped[f.version] = [];
-            grouped[f.version].push(f);
+function deleteFile(version, fileName) {
+  let req = indexedDB.open("AutixDB", 1);
+  req.onsuccess = e => {
+    let db = e.target.result;
+    let tx = db.transaction("files", "readwrite");
+    tx.objectStore("files").delete(`${version}/${fileName}`);
+    tx.oncomplete = () => openReleases();
+  };
+}
+
+function openReleases() {
+  let req = indexedDB.open("AutixDB", 1);
+  req.onupgradeneeded = e => e.target.result.createObjectStore("files", { keyPath: "path" });
+  req.onsuccess = e => {
+    let db = e.target.result;
+    let tx = db.transaction("files", "readonly");
+    let query = tx.objectStore("files").getAll();
+    
+    query.onsuccess = () => {
+      let files = query.result;
+      let grouped = {};
+      files.forEach(f => {
+        if (!grouped[f.version]) grouped[f.version] = [];
+        grouped[f.version].push(f);
+      });
+
+      let html = '';
+      let isAdmin = localStorage.getItem('autix_admin_session') === 'aktif';
+
+      if (Object.keys(grouped).length === 0) {
+        html = '<p style="color: #666; font-style: italic; margin: 0;">No releases available for now.</p>';
+      } else {
+        for (let ver in grouped) {
+          html += `<div style="margin-bottom: 10px;"><strong style="color: #333;">📁 ${ver}</strong><ul style="padding-left: 15px; margin: 3px 0; list-style-type: none;">`;
+          grouped[ver].forEach(f => {
+            let deleteBtn = isAdmin 
+              ? ` <button onclick="deleteFile('${ver}', '${f.name}')" style="width: 20px; height: 20px; background: #e53935; color: white; border: none; font-size: 11px; font-weight: bold; cursor: pointer; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; padding: 0; margin-left: 6px;" title="Delete">X</button>` 
+              : '';
+
+            html += `<li style="margin: 4px 0; display: flex; align-items: center; justify-content: space-between;">
+                       <a href="${URL.createObjectURL(f.data)}" download="${f.name}" style="color: #0066cc; text-decoration: none;">📄 ${f.name}</a>
+                       ${deleteBtn}
+                     </li>`;
           });
+          html += `</ul></div>`;
+        }
+      }
 
-          let html = '';
-          if (Object.keys(grouped).length === 0) {
-            html = '<p style="color: #666; font-style: italic; margin: 0;">No releases available for now.</p>';
-          } else {
-            for (let ver in grouped) {
-              html += `<div style="margin-bottom: 10px;"><strong style="color: #333;">📦 ${ver}</strong><ul style="padding-left: 15px; margin: 3px 0; list-style-type: none;">`;
-              grouped[ver].forEach(f => {
-                html += `<li style="margin: 4px 0;"><a href="${URL.createObjectURL(f.data)}" download="${f.name}" style="color: #0066cc; text-decoration: none;">📁 ${f.name}</a></li>`;
-              });
-              html += `</ul></div>`;
-            }
-          }
+      let adminBox = isAdmin 
+        ? `<div style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 6px;">
+             <input type="text" id="versionInput" placeholder="Version" style="width: 90px; font-size: 11px; margin-bottom: 4px; padding: 2px;"><br>
+             <input type="file" id="versionFile" onchange="if(this.files[0]) saveFile(document.getElementById('versionInput').value || 'v0.1', this.files[0])" style="font-size: 11px;">
+           </div>` 
+        : '';
 
-          let adminBox = localStorage.getItem('autix_admin_session') === 'aktif' 
-            ? `<div style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 6px;">
-                 <input type="text" id="versionInput" placeholder="Version" style="width: 90px; font-size: 11px; margin-bottom: 4px; padding: 2px;"><br>
-                 <input type="file" id="versionFile" onchange="if(this.files[0]) saveFile(document.getElementById('versionInput').value || 'v0.1', this.files[0])" style="font-size: 11px;">
-               </div>` 
-            : '';
-
-          let content = `
-            <div style="font-family: sans-serif; font-size: 13px; color: black; max-height: 250px; overflow-y: auto; min-width: 240px;">
-              ${html}
-              ${adminBox}
-            </div>
-          `;
-          
-          openWindow('Releases', content, 'siteicon.png');
-        };
-      };
-    }
+      let content = `
+        <div style="font-family: sans-serif; font-size: 13px; color: black; max-height: 250px; overflow-y: auto; min-width: 240px;">
+          ${html}
+          ${adminBox}
+        </div>
+      `;
+      
+      openWindow('Releases', content, 'siteicon.png');
+    };
+  };
+}
+    
   </script>
 
   
