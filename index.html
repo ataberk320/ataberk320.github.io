@@ -251,169 +251,94 @@
         }
   }
 
-let currentReleasesWindow = null;
+  let currentReleasesWindow = null;
 
-async function saveFile(version, subfolder, file) {
-  try {
-    let folderPath = subfolder ? subfolder.trim() : "";
-    let fullPath = folderPath ? `${version}/${folderPath}/${file.name}` : `${version}/${file.name}`;
-    
-    const storageRef = firebase.storage().ref(fullPath);
-    await storageRef.put(file);
-    let downloadUrl = await storageRef.getDownloadURL();
+  async function openReleases() {
+    try {
+      let response = await fetch('https://api.github.com/repos/ataberk320/autumnos-mobile/releases');
+      let releases = await response.json();
 
-    let docId = fullPath.replace(/\//g, "_");
-    await firebase.firestore().collection("files").doc(docId).set({
-      path: fullPath,
-      version: version,
-      subfolder: folderPath,
-      name: file.name,
-      url: downloadUrl
-    });
+      let html = '';
 
-    openReleases();
-  } catch (error) {
-    console.error("Yükleme hatası:", error);
-  }
-}
-
-async function deleteFile(path, docId) {
-  try {
-    const storageRef = firebase.storage().ref(path);
-    await storageRef.delete().catch(() => {});
-
-    await firebase.firestore().collection("files").doc(docId).delete();
-
-    openReleases();
-  } catch (error) {
-    console.error("Silme hatası:", error);
-  }
-}
-
-function handleFileSelect(fileInput) {
-  if (!fileInput.files[0]) return;
-  let ver = document.getElementById('versionInput').value.trim() || 'v0.1';
-  let sub = document.getElementById('subfolderInput').value.trim();
-  saveFile(ver, sub, fileInput.files[0]);
-}
-
-async function openReleases() {
-  try {
-    let snapshot = await firebase.firestore().collection("files").get();
-    let files = [];
-    snapshot.forEach(doc => {
-      let data = doc.data();
-      data.docId = doc.id;
-      files.push(data);
-    });
-
-    let grouped = {};
-    files.forEach(f => {
-      if (!grouped[f.version]) grouped[f.version] = {};
-      let sub = f.subfolder || "root";
-      if (!grouped[f.version][sub]) grouped[f.version][sub] = [];
-      grouped[f.version][sub].push(f);
-    });
-
-    let html = '';
-    let isAdmin = localStorage.getItem('autix_admin_session') === 'aktif';
-
-    if (Object.keys(grouped).length === 0) {
-      html = '<p style="color: #666; font-style: italic; margin: 0; font-size: 11px;">No releases available for now.</p>';
-    } else {
-      for (let ver in grouped) {
-        html += `<div style="margin-bottom: 8px;"><strong style="color: #333; font-size: 12px;">📦 ${ver}</strong><div style="padding-left: 12px;">`;
-        
-        let subs = grouped[ver];
-        for (let sub in subs) {
-          if (sub !== "root") {
-            html += `<div style="margin: 4px 0 2px 0;"><strong style="color: #444; font-size: 11px;">📁 ${sub}</strong></div><ul style="padding-left: 12px; margin: 2px 0; list-style-type: none;">`;
+      if (!Array.isArray(releases) || releases.length === 0) {
+        html = '<p style="color: #666; font-style: italic; margin: 0; font-size: 11px;">No releases available for now.</p>';
+      } else {
+        releases.forEach(release => {
+          let ver = release.tag_name;
+          html += `<div style="margin-bottom: 8px;"><strong style="color: #333; font-size: 12px;">📦 ${ver}</strong><div style="padding-left: 12px;">`;
+          
+          if (!release.assets || release.assets.length === 0) {
+            html += `<p style="color: #888; font-size: 10px; margin: 2px 0; font-style: italic;">No files in this version.</p>`;
           } else {
             html += `<ul style="padding-left: 0; margin: 2px 0; list-style-type: none;">`;
+            release.assets.forEach(asset => {
+              html += `<li style="margin: 3px 0; display: flex; align-items: center; justify-content: space-between;">
+                         <a href="${asset.browser_download_url}" download="${asset.name}" target="_blank" style="color: #0066cc; text-decoration: none; font-size: 11px;">📄 ${asset.name}</a>
+                       </li>`;
+            });
+            html += `</ul>`;
           }
-
-          subs[sub].forEach(f => {
-            let deleteBtn = isAdmin 
-              ? ` <button onclick="deleteFile('${f.path}', '${f.docId}')" style="width: 15px; height: 15px; background: #e53935; color: white; border: none; font-size: 8px; font-weight: bold; cursor: pointer; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; padding: 0; margin-left: 4px;" title="Delete">X</button>` 
-              : '';
-
-            html += `<li style="margin: 3px 0; display: flex; align-items: center; justify-content: space-between;">
-                       <a href="${f.url}" download="${f.name}" target="_blank" style="color: #0066cc; text-decoration: none; font-size: 11px;">📄 ${f.name}</a>
-                       ${deleteBtn}
-                     </li>`;
-          });
-          html += `</ul>`;
-        }
-        html += `</div></div>`;
+          html += `</div></div>`;
+        });
       }
+
+      let content = `
+        <div style="font-family: sans-serif; font-size: 11px; color: black; max-height: 250px; overflow-y: auto; min-width: 220px;">
+          ${html}
+          <div style="margin-top: 8px; border-top: 1px dashed #ccc; padding-top: 5px; font-size: 10px; color: #666; text-align: center;">
+            Files managing by Github Releases.
+          </div>
+        </div>
+      `;
+      
+      if (currentReleasesWindow && document.body.contains(currentReleasesWindow)) {
+        currentReleasesWindow.querySelector('.win-body').innerHTML = content;
+        return;
+      }
+
+      const desktop = document.getElementById('desktop');
+      const taskbar = document.getElementById('taskbar');
+      const win = document.createElement('div');
+      win.className = 'window';
+      win.style.top = '20px';
+      win.style.left = '20px';
+      
+      win.innerHTML = `
+        <div class="win-header">
+            <span><img src="siteicon.png" width="16" height="16" style="vertical-align:middle; margin-right:5px;"> <strong>Releases</strong></span>
+            <button class="close-btn">X</button>
+        </div>
+        <div class="win-body" style="padding: 10px; color: black;">${content}</div>
+      `;
+          
+      desktop.appendChild(win);
+      makeDraggable(win);
+      setTimeout(() => win.classList.add('open'), 10);
+
+      const winBtn = document.createElement('div');
+      winBtn.className = 'taskbar-item';
+      winBtn.style.padding = "5px 10px";
+      winBtn.style.background = "#555";
+      winBtn.style.cursor = "pointer";
+      winBtn.style.marginRight = "5px";
+      winBtn.innerHTML = `<img src="siteicon.png" width="16" height="16" style="vertical-align:middle;"> Releases`;
+
+      winBtn.onclick = () => {
+        win.style.display = (win.style.display === 'none') ? 'flex' : 'none';
+      };
+      taskbar.appendChild(winBtn);
+
+      win.querySelector('.close-btn').onclick = () => {
+        win.remove();
+        winBtn.remove();
+        currentReleasesWindow = null;
+      };
+
+      currentReleasesWindow = win;
+    } catch (error) {
+      console.error("GitHub Releases çekilemedi:", error);
     }
-
-    let adminBox = isAdmin 
-      ? `<div style="margin-top: 8px; border-top: 1px dashed #ccc; padding-top: 5px;">
-           <input type="text" id="versionInput" placeholder="Version" style="width: 90px; font-size: 10px; margin-bottom: 3px; padding: 1px 3px;"><br>
-           <input type="text" id="subfolderInput" placeholder="Subfolder" style="width: 90px; font-size: 10px; margin-bottom: 3px; padding: 1px 3px;"><br>
-           <input type="file" id="versionFile" onchange="handleFileSelect(this)" style="font-size: 10px;">
-         </div>` 
-      : '';
-
-    let content = `
-      <div style="font-family: sans-serif; font-size: 11px; color: black; max-height: 250px; overflow-y: auto; min-width: 220px;">
-        ${html}
-        ${adminBox}
-      </div>
-    `;
-    
-    if (currentReleasesWindow && document.body.contains(currentReleasesWindow)) {
-      currentReleasesWindow.querySelector('.win-body').innerHTML = content;
-      return;
-    }
-
-    const desktop = document.getElementById('desktop');
-    const taskbar = document.getElementById('taskbar');
-    const win = document.createElement('div');
-    win.className = 'window';
-    win.style.top = '20px';
-    win.style.left = '20px';
-    
-    win.innerHTML = `
-      <div class="win-header">
-          <span><img src="siteicon.png" width="16" height="16" style="vertical-align:middle; margin-right:5px;"> <strong>Releases</strong></span>
-          <button class="close-btn">X</button>
-      </div>
-      <div class="win-body" style="padding: 10px; color: black;">${content}</div>
-    `;
-        
-    desktop.appendChild(win);
-    makeDraggable(win);
-    setTimeout(() => win.classList.add('open'), 10);
-
-    const winBtn = document.createElement('div');
-    winBtn.className = 'taskbar-item';
-    winBtn.style.padding = "5px 10px";
-    winBtn.style.background = "#555";
-    winBtn.style.cursor = "pointer";
-    winBtn.style.marginRight = "5px";
-    winBtn.innerHTML = `<img src="siteicon.png" width="16" height="16" style="vertical-align:middle;"> Releases`;
-
-    winBtn.onclick = () => {
-      win.style.display = (win.style.display === 'none') ? 'flex' : 'none';
-    };
-    taskbar.appendChild(winBtn);
-
-    win.querySelector('.close-btn').onclick = () => {
-      win.remove();
-      winBtn.remove();
-      currentReleasesWindow = null;
-    };
-
-    currentReleasesWindow = win;
-  } catch (error) {
-    console.error("Err:", error);
   }
-}
-
-
-    
   </script>
 
   
